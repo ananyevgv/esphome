@@ -9,6 +9,7 @@ from esphome.types import ConfigType
 DEPENDENCIES = ["uart"]
 DOMAIN = "tuya"
 
+MULTI_CONF = True
 CONF_IGNORE_MCU_UPDATE_ON_DATAPOINTS = "ignore_mcu_update_on_datapoints"
 
 CONF_ON_DATAPOINT_UPDATE = "on_datapoint_update"
@@ -60,6 +61,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(Tuya),
+            cv.Optional(CONF_UART_ID): cv.use_id(uart.UARTComponent), 
             cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
             cv.Optional(CONF_FORCE_TIME_SYNC, default=False): cv.boolean,
             cv.Optional(CONF_IGNORE_MCU_UPDATE_ON_DATAPOINTS): cv.ensure_list(
