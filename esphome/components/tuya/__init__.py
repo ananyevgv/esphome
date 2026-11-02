@@ -2,7 +2,7 @@ from esphome import automation, pins
 import esphome.codegen as cg
 from esphome.components import time, uart
 import esphome.config_validation as cv
-from esphome.const import CONF_SENSOR_DATAPOINT, CONF_TIME_ID
+from esphome.const import CONF_ID, CONF_UART_ID, CONF_SENSOR_DATAPOINT, CONF_TIME_ID
 from esphome.cpp_generator import MockObj
 from esphome.types import ConfigType
 
