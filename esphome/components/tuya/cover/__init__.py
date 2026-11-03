@@ -3,7 +3,7 @@ from esphome.components import cover
 import esphome.config_validation as cv
 from esphome.const import CONF_MAX_VALUE, CONF_MIN_VALUE, CONF_RESTORE_MODE
 
-from .. import CONF_TUYA_ID, Tuya, tuya_ns
+from .. import CONF_ID,CONF_TUYA_ID, Tuya, tuya_ns
 
 DEPENDENCIES = ["tuya"]
 
