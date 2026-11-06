@@ -12,7 +12,7 @@ static const uint8_t PM1006K_REQUEST[] = {0x11, 0x01, 0x02, 0xEC};
 static const uint8_t PM1006K_FRAME_LENGTH = 16;
 
 void PM1006KComponent::setup() {
-  // Отправляем команду сразу после включения, чтобы датчик не ушёл в PWM
+  // Отправляем команду сразу после включения, чтобы датчик не переключился в PWM
   // (в течение первых 5 секунд после подачи питания)
   ESP_LOGV(TAG, "sending initial measurement request to keep UART mode");
   this->write_array(PM1006K_REQUEST, sizeof(PM1006K_REQUEST));
@@ -82,9 +82,9 @@ optional<bool> PM1006KComponent::check_byte_() const {
 
 void PM1006KComponent::parse_data_() {
   // data_[0..2]   = 0x16 0x11 0x0B
-  // data_[3..6]   = DF1-DF4 (PM2.5 = DF3/DF4, смещение 5)
-  // data_[7..10]  = DF5-DF8 (PM1.0 = DF7/DF8, смещение 9)
-  // data_[11..14] = DF9-DF12 (PM10 = DF11/DF12, смещение 13)
+  // data_[3..6]   = DF1-DF4  -> PM2.5 = DF3/DF4 (offset 5)
+  // data_[7..10]  = DF5-DF8  -> PM1.0 = DF7/DF8 (offset 9)
+  // data_[11..14] = DF9-DF12 -> PM10  = DF11/DF12 (offset 13)
   // data_[15]     = checksum
   const uint16_t pm_1_0 = this->get_16_bit_uint_(9);
   const uint16_t pm_2_5 = this->get_16_bit_uint_(5);
