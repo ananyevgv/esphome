@@ -8,8 +8,8 @@
 namespace esphome::pm1006k {
 
 class PM1006KComponent final : public PollingComponent, public uart::UARTDevice {
-  SUB_SENSOR(pm_2_5)
   SUB_SENSOR(pm_1_0)
+  SUB_SENSOR(pm_2_5)
   SUB_SENSOR(pm_10_0)
 
  public:
