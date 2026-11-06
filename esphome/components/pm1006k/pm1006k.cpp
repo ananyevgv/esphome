@@ -8,11 +8,12 @@ ESPHOME_LOG_TAG(TAG, "pm1006k");
 static const uint8_t PM1006K_RESPONSE_HEADER[] = {0x16, 0x11, 0x0B};
 static const uint8_t PM1006K_REQUEST[] = {0x11, 0x01, 0x02, 0xEC};
 
-// Общая длина кадра PM1006K: header 3 + data 12 + checksum 1 = 16
+// PM1006K frame: header 3 + data 12 + checksum 1 = 16
 static const uint8_t PM1006K_FRAME_LENGTH = 16;
 
 void PM1006KComponent::setup() {
-  // Отправляем команду сразу после включения, чтобы датчик не переключился в PWM
+  // Отправляем команду сразу после включения, чтобы датчик не ушёл в PWM
+  // (в течение первых 5 секунд после подачи питания)
   ESP_LOGV(TAG, "sending initial measurement request to keep UART mode");
   this->write_array(PM1006K_REQUEST, sizeof(PM1006K_REQUEST));
 }
@@ -63,9 +64,8 @@ optional<bool> PM1006KComponent::check_byte_() const {
   }
 
   // index 3..14 are the data fields (DF1..DF12)
-  if (index < (PM1006K_FRAME_LENGTH - 1)) {
+  if (index < (PM1006K_FRAME_LENGTH - 1))
     return true;
-  }
 
   // checksum at index 15
   if (index == (PM1006K_FRAME_LENGTH - 1)) {
@@ -81,16 +81,14 @@ optional<bool> PM1006KComponent::check_byte_() const {
 }
 
 void PM1006KComponent::parse_data_() {
-  // Раскладка данных PM1006K:
   // data_[0..2]   = 0x16 0x11 0x0B
-  // data_[3..4]   = DF1-DF2  -> PM1.0
-  // data_[5..6]   = DF3-DF4  -> PM2.5
-  // data_[7..8]   = DF5-DF6  -> PM10
-  // data_[9..14]  = DF7-DF12 (не используются)
+  // data_[3..6]   = DF1-DF4 (PM2.5 = DF3/DF4, смещение 5)
+  // data_[7..10]  = DF5-DF8 (PM1.0 = DF7/DF8, смещение 9)
+  // data_[11..14] = DF9-DF12 (PM10 = DF11/DF12, смещение 13)
   // data_[15]     = checksum
-  const uint16_t pm_1_0 = this->get_16_bit_uint_(3);
+  const uint16_t pm_1_0 = this->get_16_bit_uint_(9);
   const uint16_t pm_2_5 = this->get_16_bit_uint_(5);
-  const uint16_t pm_10_0 = this->get_16_bit_uint_(7);
+  const uint16_t pm_10_0 = this->get_16_bit_uint_(13);
 
   ESP_LOGD(TAG, "Got PM1.0: %d, PM2.5: %d, PM10: %d µg/m³", pm_1_0, pm_2_5, pm_10_0);
 
