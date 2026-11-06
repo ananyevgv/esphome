@@ -69,7 +69,7 @@ FINAL_VALIDATE_SCHEMA = validate_interval_uart
 
 
 async def to_code(config: ConfigType) -> None:
-    var = await uart.new_uart_component(config)
+    await uart.register_uart_device(var, config) 
 
     sensors = sensor.sub_sensors(config)
     await sensors(CONF_PM_1_0, var.set_pm_1_0_sensor)
