@@ -166,6 +166,7 @@ void MAX7219Component::send_to_all_(uint8_t a_register, uint8_t data) {
   this->disable();
 }
 void MAX7219Component::update() {
+  this->send_to_all_(MAX7219_REGISTER_TEST, 0); 
   if (this->intensity_changed_) {
     this->send_to_all_(MAX7219_REGISTER_INTENSITY, this->intensity_);
     this->intensity_changed_ = false;
